@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -17,6 +19,7 @@ import javax.swing.JPanel;
 public class StartingScreen extends JFrame {
 	static final int RADIUS = 1; // polmer kvadratov
 	public final Color DANGER_RED = new Color(255, 14, 14);
+	public final Color D_GRAY = new Color(126,74,75);
 	public JButton button;
 	public JPanel panel;
 	 
@@ -43,6 +46,7 @@ public class StartingScreen extends JFrame {
 			}
 		};
 		panel.setBackground(Color.BLACK);
+		panel.setLayout(new GridBagLayout());
 		panel.setFocusable(true);
 		
 		
@@ -67,6 +71,11 @@ public class StartingScreen extends JFrame {
 		);
 		
 		button = new JButton("Start");
+        button.setBackground(Color.DARK_GRAY);
+        button.setForeground(Color.WHITE);
+
+
+        button.setFont(new Font("Sans Serif", Font.PLAIN, 14));
 		button.setPreferredSize(new Dimension(96, 40));
 		button.addActionListener(new ActionListener() {
 		    @Override
@@ -74,6 +83,19 @@ public class StartingScreen extends JFrame {
 		        //
 		    }
 		});
+		button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(Color.WHITE);
+                button.setForeground(Color.BLACK);
+
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+            	button.setBackground(Color.DARK_GRAY);
+                button.setForeground(Color.WHITE);
+            }
+        });
 		
 		
 		add(panel);
