@@ -22,6 +22,7 @@ public class StartingScreen extends JFrame {
 	public final Color D_GRAY = new Color(126,74,75);
 	public JButton button;
 	public JPanel panel;
+	public volatile boolean menuRunning = true;
 	 
 	List<Square> squares = new ArrayList<Square>();
 	public StartingScreen() {
@@ -80,7 +81,16 @@ public class StartingScreen extends JFrame {
 		button.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		        //
+		    	// 1. Stop the background animation loop
+                menuRunning = false; 
+                
+                // 2. Hide and destroy the starting screen window
+                dispose(); 
+                
+                // 3. Launch your actual platformer game
+                // (Assuming you have a class called PlatformerGame)
+                //PlatformerGame myGame = new PlatformerGame();
+                //myGame.start();
 		    }
 		});
 		button.addMouseListener(new MouseAdapter() {
@@ -109,7 +119,7 @@ public class StartingScreen extends JFrame {
 		GUI.setVisible(true);
 		
 		int i = 0;
-		while (true) {
+		while (GUI.menuRunning) {
 			
 			if (GUI.squares.size()>120)
 				GUI.squares.remove(0);
