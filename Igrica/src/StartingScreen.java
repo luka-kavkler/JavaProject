@@ -81,16 +81,13 @@ public class StartingScreen extends JFrame {
 		button.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		    	// 1. Stop the background animation loop
                 menuRunning = false; 
                 
-                // 2. Hide and destroy the starting screen window
+                //Hide and destroy the starting screen window
                 dispose(); 
                 
-                // 3. Launch your actual platformer game
-                // (Assuming you have a class called PlatformerGame)
-                //PlatformerGame myGame = new PlatformerGame();
-                //myGame.start();
+                PlatformerGame myGame = new PlatformerGame();
+                myGame.start();
 		    }
 		});
 		button.addMouseListener(new MouseAdapter() {
