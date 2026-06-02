@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 
 public class StartingScreen extends JFrame {
 	static final int RADIUS = 1; // polmer kvadratov
-	public final Color DANGER_RED = new Color(255, 14, 14);
+	public final static Color DANGER_RED = new Color(255, 14, 14);
 	public final Color D_GRAY = new Color(126,74,75);
 	public JButton button;
 	public JPanel panel;
@@ -27,8 +27,9 @@ public class StartingScreen extends JFrame {
 	List<Square> squares = new ArrayList<Square>();
 	public StartingScreen() {
 		super();
-		setTitle("Ime igre");
+		setTitle("Mario 64");
 		setSize(new Dimension(1024, 768));
+		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
@@ -75,7 +76,8 @@ public class StartingScreen extends JFrame {
         button.setBackground(Color.DARK_GRAY);
         button.setForeground(Color.WHITE);
 
-
+        
+        
         button.setFont(new Font("Sans Serif", Font.PLAIN, 14));
 		button.setPreferredSize(new Dimension(96, 40));
 		button.addActionListener(new ActionListener() {
@@ -106,6 +108,7 @@ public class StartingScreen extends JFrame {
 		
 		
 		add(panel);
+		button.setFocusable(false);
 		panel.add(button);
 		
 		

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -27,14 +28,17 @@ public class PlatformerGame {
 
     public PlatformerGame() {
     	
-    	player = new Player(100, 400);
-        ground = new Rectangle(0, 650, 5000, 100); //TODO naredi to nefiksirano
+        
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        player = new Player(100, 400);
+        ground = new Rectangle(0, screenSize.height - 151, screenSize.width, 150); 
         
         
         
         // Initialize your game window
         gameFrame = new JFrame("Mario 10");
-        gameFrame.setSize(new Dimension(1024, 768));
+        gameFrame.setSize(screenSize);
+        gameFrame.setLocationRelativeTo(null);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         gamePanel = new JPanel() {
@@ -52,6 +56,8 @@ public class PlatformerGame {
         
         setupControls();
         gameFrame.add(gamePanel);
+        gameFrame.setVisible(true);
+        gameFrame.setExtendedState(gameFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         
         
     }
@@ -121,21 +127,29 @@ public class PlatformerGame {
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
-                if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) moveLeft = true;
-                if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) moveRight = true;
+                if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) 
+                	moveLeft = true;
+                if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) 
+                	moveRight = true;
                 
                 // Jump condition: Must be pressing Jump key AND not already jumping
-                if ((key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE) && !player.jumping) {
+                if ((key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE || key == KeyEvent.VK_UP) && !player.jumping) {
                     player.velY = JUMP_STRENGTH;
                     player.jumping = true;
+                    
+                //meč
+                if (key == KeyEvent.VK_Q) 
+                	player.attacking = true;
                 }
             }
             
             @Override
             public void keyReleased(KeyEvent e) {
                 int key = e.getKeyCode();
-                if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) moveLeft = false;
-                if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) moveRight = false;
+                if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) 
+                	moveLeft = false;
+                if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) 
+                	moveRight = false;
             }
         });
     }
@@ -146,23 +160,50 @@ public class PlatformerGame {
     
     
     
+    public class Sword {
+    	private int x, y;
+        final private int width, height;
+        public Sword(int x1, int y1, boolean directionRight) {
+        	x = x1;
+        	if (directionRight)
+        		width = 100; // zamah v desno
+        	else 
+        		width = -100; // zamah v levo
+        	height = 20;
+        	//if (player.directionRight)
+        	//	x2 = x1 + width;
+        	//else
+        	//	x2 = x1 - width;
+        	y = y1;
+        	
+        }
+    }
+    
     public class Player {
         private int x, y;
         private int width, height;
         private boolean jumping;
         private double velY;
+        private boolean directionRight;
+        private boolean attacking;
 
         public Player(int startX, int startY) {
             x = startX;
             y = startY;
+            directionRight = true; // doloca v katero smer bo udarjal meč
             width = 50;
             height = 50;
             jumping = false;
+            attacking = false;
             velY = 0;
         }
 
         public void move(int deltaX, int deltaY) {
-            x += deltaX;
+            if (deltaX > 0)
+            	directionRight = true;
+            if (deltaX < 0)
+            	directionRight = false;
+        	x += deltaX;
             y += deltaY;
         }
         
