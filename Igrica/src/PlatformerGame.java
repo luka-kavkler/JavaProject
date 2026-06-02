@@ -7,6 +7,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PlatformerGame {
     
@@ -17,6 +19,7 @@ public class PlatformerGame {
     // Game Entities
     private Player player;
     private Rectangle ground;
+    private Sword sword;
     
     // Movement Flags 
     private boolean moveLeft = false;
@@ -32,6 +35,7 @@ public class PlatformerGame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         player = new Player(100, 400);
         ground = new Rectangle(0, screenSize.height - 151, screenSize.width, 150); 
+        sword = new Sword();
         
         
         
@@ -95,9 +99,13 @@ public class PlatformerGame {
         if (moveRight) 
         	player.move(7, 0);
         
+        	
+        	
+        
         // Apply Gravity
         player.velY += GRAVITY;
         player.move(0, (int) player.velY);
+        
         
         // Collision Detection with Ground
         if (checkCollision(player.getBounds(), ground)) {
@@ -108,6 +116,9 @@ public class PlatformerGame {
                 player.jumping = false;
             }
         }
+        
+        //TODO Collison Detection meč
+        
     }
     
     
@@ -119,6 +130,17 @@ public class PlatformerGame {
         // Draw the Player
         g.setColor(StartingScreen.DANGER_RED);
         g.fillRect(player.x, player.y, player.width, player.height);
+        
+        // Draw sword
+        if (player.attacking) {	
+        	g.setColor(Color.WHITE);
+        	
+        	if (player.directionRight)
+        		g.fillRect(player.x + player.width, player.y + player.height/2, sword.width, sword.height);
+        	else
+        		g.fillRect(player.x - sword.width, player.y + player.height/2, sword.width, sword.height);
+        }	
+        
     }
     
     
@@ -136,10 +158,21 @@ public class PlatformerGame {
                 if ((key == KeyEvent.VK_W || key == KeyEvent.VK_SPACE || key == KeyEvent.VK_UP) && !player.jumping) {
                     player.velY = JUMP_STRENGTH;
                     player.jumping = true;
+                }
                     
                 //meč
-                if (key == KeyEvent.VK_Q) 
+                if (key == KeyEvent.VK_Q && player.attacking == false) { 
                 	player.attacking = true;
+                	
+                	Timer timer = new Timer();
+                	TimerTask task = new TimerTask() {
+                		@Override
+                		public void run() {
+                			
+                			player.attacking = false;
+                		}
+                		};
+                	timer.schedule(task, 600);	
                 }
             }
             
@@ -150,6 +183,7 @@ public class PlatformerGame {
                 	moveLeft = false;
                 if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) 
                 	moveRight = false;
+               
             }
         });
     }
@@ -161,23 +195,13 @@ public class PlatformerGame {
     
     
     public class Sword {
-    	private int x, y;
         final private int width, height;
-        public Sword(int x1, int y1, boolean directionRight) {
-        	x = x1;
-        	if (directionRight)
-        		width = 100; // zamah v desno
-        	else 
-        		width = -100; // zamah v levo
-        	height = 20;
-        	//if (player.directionRight)
-        	//	x2 = x1 + width;
-        	//else
-        	//	x2 = x1 - width;
-        	y = y1;
-        	
-        }
+        public Sword() {
+        	width = 90;
+        	height = 5;
+        	}
     }
+    
     
     public class Player {
         private int x, y;
