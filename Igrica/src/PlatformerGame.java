@@ -20,9 +20,20 @@ public class PlatformerGame {
     // Game Entities
     private Player player;
     private Enemy enemy;
+    private Enemy enemy2;
+    private Enemy enemy3;
+    private Enemy enemy4;
     private Rectangle ground;
+    private Rectangle ground2;
+    private Rectangle ground3;
+    private Rectangle ground4;
+    private Rectangle groundFinish;
+    public Rectangle wall1;
+    public Rectangle wall2;
     private Sword sword;
-    public ArrayList<Enemy> enemies; 
+    public ArrayList<Enemy> enemies;
+    public ArrayList<Rectangle> groundPanels;
+    public ArrayList<Rectangle> wallPanels;
     
     // Movement Flags 
     private boolean moveLeft = false;
@@ -34,17 +45,39 @@ public class PlatformerGame {
 
     public PlatformerGame() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        player = new Player(100, 400);
+        player = new Player(100, screenSize.height - 300);
         ground = new Rectangle(0, screenSize.height - 151, screenSize.width, 150); 
         sword = new Sword(player);
+        
         
         int baseX = 800;
         int enemyMovementRange = 200;
         enemy = new Enemy(screenSize.width - baseX, screenSize.height - ground.height - 50, baseX, enemyMovementRange);
+        enemy2 = new Enemy(baseX + 300, screenSize.height - screenSize.height/3 - 51, baseX + 300, enemyMovementRange);
+        enemy3 = new Enemy(baseX - 300, screenSize.height - screenSize.height/3 - 251, baseX - 300, enemyMovementRange);
+        enemy4 = new Enemy(baseX + 300, screenSize.height - screenSize.height/3 - 451, baseX + 300, enemyMovementRange);
         
+        ground2 = new Rectangle(baseX, screenSize.height - screenSize.height/3, 600, 20);
+        ground3 = new Rectangle(baseX - 600, screenSize.height - screenSize.height/3 - 200, 600, 20);
+        ground4 = new Rectangle(baseX, screenSize.height - screenSize.height/3 - 400, 600, 20);
+        groundFinish = new Rectangle(baseX + 600, screenSize.height - screenSize.height/3 - 550, 300, 20);
+        
+        wall1 = new Rectangle(-1, 0, 1, screenSize.height);
+        wall2 = new Rectangle(screenSize.width + 1, 0, 1, screenSize.height);
+        
+        
+        groundPanels = new ArrayList<Rectangle>();
+        groundPanels.add(ground);
+        groundPanels.add(ground2);
+        groundPanels.add(ground3);
+        groundPanels.add(ground4);
+        groundPanels.add(groundFinish);
         
         enemies = new ArrayList<Enemy>();
         enemies.add(enemy);
+        enemies.add(enemy2);
+        enemies.add(enemy3);
+        enemies.add(enemy4);
         
         // Initialize your game window
         gameFrame = new JFrame("Mario 10");
@@ -113,13 +146,38 @@ public class PlatformerGame {
         player.velY += GRAVITY;
         player.move(0, (int) player.velY);
         
-        // Collision Detection with Ground (Player)
-        if (checkCollision(player.getBounds(), ground)) {
-            if (player.velY > 0) {
-                player.y = ground.y - player.height;
-                player.velY = 0;
-                player.jumping = false;
+        for (Rectangle groundPanel : groundPanels) {
+        	// Collision Detection with Ground (Player)
+            if (checkCollision(player.getBounds(), groundPanel)) {
+                if (player.velY > 0) {
+                    player.y = groundPanel.y - player.height;
+                    player.velY = 0;
+                    player.jumping = false;
+                }
             }
+            for (Enemy enemy1 : enemies) {
+            	if (checkCollision(enemy1.getBounds(), groundPanel)) {
+                    if (enemy1.velY > 0) {
+                        enemy1.y = groundPanel.y - enemy1.height;
+                        enemy1.velY = 0;
+                        enemy1.jumping = false;
+                    }
+                }
+            
+           }
+        }
+        
+        
+        if (checkCollision(player.getBounds(), wall1)) {
+        		player.x = wall1.x + 1;
+                moveLeft = false;
+                
+        }
+        if (checkCollision(player.getBounds(), wall2)) {
+    		
+            player.x = wall2.x - player.width - 1;
+            moveRight = false;
+
         }
         
         
@@ -159,6 +217,11 @@ public class PlatformerGame {
         // Draw the Floor
         g.setColor(Color.BLACK);
         g.fillRect(ground.x, ground.y, ground.width, ground.height);
+        g.fillRect(ground2.x, ground2.y, ground2.width, ground2.height);
+        g.fillRect(ground3.x, ground3.y, ground3.width, ground3.height);
+        g.fillRect(ground4.x, ground4.y, ground4.width, ground4.height);
+        g.fillRect(groundFinish.x, groundFinish.y, groundFinish.width, groundFinish.height);
+        
         
         // Draw the Player
         g.setColor(new Color(255, 14, 14)); // Uses standard Color matching StartingScreen.DANGER_RED
