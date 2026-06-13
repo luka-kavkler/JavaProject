@@ -16,6 +16,7 @@ public class PlatformerGame {
     private JFrame gameFrame;
     private JPanel gamePanel;
     private final Color BACKGROUND_GREY = new Color(40,50,50);
+    private Dimension screenSize; 
     
     // Game Entities
     private Player player;
@@ -27,7 +28,7 @@ public class PlatformerGame {
     private Rectangle ground2;
     private Rectangle ground3;
     private Rectangle ground4;
-    private Rectangle groundFinish;
+    public Rectangle groundFinish;
     public Rectangle wall1;
     public Rectangle wall2;
     private Sword sword;
@@ -44,7 +45,7 @@ public class PlatformerGame {
     private final int JUMP_STRENGTH = -20;
 
     public PlatformerGame() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         player = new Player(100, screenSize.height - 300);
         ground = new Rectangle(0, screenSize.height - 151, screenSize.width, 150); 
         sword = new Sword(player);
@@ -108,13 +109,18 @@ public class PlatformerGame {
         Thread gameThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                gameLoop();
+                try {
+					gameLoop();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
         gameThread.start();
     }
     
-    public void gameLoop() {
+    public void gameLoop() throws InterruptedException {
         while (true) {
             update();  // Update game state
             gamePanel.repaint();
@@ -127,7 +133,7 @@ public class PlatformerGame {
         }
     }
     
-    private void update() {
+    private void update() throws InterruptedException {
         // Horizontal Player Movement
         if (moveLeft) 
             player.move(-7, 0);
@@ -180,6 +186,17 @@ public class PlatformerGame {
 
         }
         
+        //ta čudn check je zato, ker mi sicer ni zaznavalo, da sem res na groundFinish
+        if (checkCollision(player.getBounds(), new Rectangle(groundFinish.x, groundFinish.y -5, groundFinish.width, groundFinish.height + 5))) {
+            gameFrame.dispose();
+            
+            StartingScreen GUI = new StartingScreen("Well played!");
+            GUI.setVisible(true);
+            GUI.startAnimation();
+            
+            
+            throw new InterruptedException("Game successfully completed.");
+        }
         
         ArrayList<Enemy> enemiesToRemove = new ArrayList<Enemy>();
         
@@ -198,8 +215,24 @@ public class PlatformerGame {
       
             // Collision detection enemy touching player
             if (checkCollision(enemy1.getBounds(), player.getBounds())){
-                // TODO: One hitpoint restart logic goes here
-            }
+                player.x = 100; 
+                player.y = screenSize.height - 300;
+                
+                
+                //resets enemies
+                int baseX = 800;
+                int enemyMovementRange = 200;
+                enemy = new Enemy(screenSize.width - baseX, screenSize.height - ground.height - 50, baseX, enemyMovementRange);
+                enemy2 = new Enemy(baseX + 300, screenSize.height - screenSize.height/3 - 51, baseX + 300, enemyMovementRange);
+                enemy3 = new Enemy(baseX - 300, screenSize.height - screenSize.height/3 - 251, baseX - 300, enemyMovementRange);
+                enemy4 = new Enemy(baseX + 300, screenSize.height - screenSize.height/3 - 451, baseX + 300, enemyMovementRange);
+                
+                enemies = new ArrayList<Enemy>();
+                enemies.add(enemy);
+                enemies.add(enemy2);
+                enemies.add(enemy3);
+                enemies.add(enemy4);
+                }
         
             // Collision Detection Sword hitting Enemy
             if (player.attacking) {

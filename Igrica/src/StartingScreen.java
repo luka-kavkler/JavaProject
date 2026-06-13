@@ -25,7 +25,7 @@ public class StartingScreen extends JFrame {
 	public volatile boolean menuRunning = true;
 	 
 	List<Square> squares = new ArrayList<Square>();
-	public StartingScreen() {
+	public StartingScreen(String buttonText) {
 		super();
 		setTitle("Mario 64");
 		setSize(new Dimension(1024, 768));
@@ -72,14 +72,14 @@ public class StartingScreen extends JFrame {
 		}
 		);
 		
-		button = new JButton("Start");
+		button = new JButton(buttonText);
         button.setBackground(Color.DARK_GRAY);
         button.setForeground(Color.WHITE);
 
         
         
         button.setFont(new Font("Sans Serif", Font.PLAIN, 14));
-		button.setPreferredSize(new Dimension(96, 40));
+		button.setPreferredSize(new Dimension(110, 40));
 		button.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -113,34 +113,44 @@ public class StartingScreen extends JFrame {
 		
 		
 	}
-
+	public void startAnimation() {
+	    Thread animationThread = new Thread(new Runnable() {
+	        @Override
+	        public void run() {
+	            int i = 0;
+	            while (menuRunning) {
+	                synchronized(squares) {
+	                    if (squares.size() > 120) {
+	                        squares.remove(0);
+	                    }
+	                    
+	                    if (i % 2 == 0) {
+	                        squares.add(new Square(Math.random(), Math.random(), RADIUS));
+	                    }
+	                    
+	                    for (Square square : squares) {
+	                        square.waveRadius++;
+	                    }
+	                }
+	                
+	                repaint();
+	                
+	                try {
+	                    Thread.sleep(35);
+	                } catch (InterruptedException e) {
+	                    Thread.currentThread().interrupt();
+	                    break;
+	                }
+	                i++;
+	            }
+	        }
+	    });
+	    animationThread.start();
+	}
 	public static void main(String[] args) throws InterruptedException {
-		StartingScreen GUI = new StartingScreen();
-		GUI.setVisible(true);
-		
-		int i = 0;
-		while (GUI.menuRunning) {
-			
-			if (GUI.squares.size()>120)
-				GUI.squares.remove(0);
-			
-			if (i%2 == 0) {
-				int radius = RADIUS;
-  		  		double x = (double)Math.random(); //Želimo realno število med 0 in 1
-  		  		double y = (double)Math.random();
-  		 	
-  		
-  		  		Square newSquare = new Square(x,y,radius);
-  		  		GUI.squares.add(newSquare);
-			};
-			
-			for (Square square : GUI.squares) {
-					square.waveRadius++;
-			};
-			GUI.repaint();
-			Thread.sleep(35);
-			i++;
-		}
+		StartingScreen GUI = new StartingScreen("Start");
+        GUI.setVisible(true);
+        GUI.startAnimation();
 	}
 	}
 
