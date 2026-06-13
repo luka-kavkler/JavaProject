@@ -79,7 +79,7 @@ public class StartingScreen extends JFrame {
         
         
         button.setFont(new Font("Sans Serif", Font.PLAIN, 14));
-		button.setPreferredSize(new Dimension(110, 40));
+		button.setPreferredSize(new Dimension(130, 40));
 		button.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
